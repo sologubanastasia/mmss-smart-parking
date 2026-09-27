@@ -1,0 +1,4 @@
+# Local previews and editor artifacts
+*.qa.png
+.DS_Store
+Thumbs.db
