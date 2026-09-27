@@ -1,0 +1,30 @@
+flowchart LR
+    driver["Водій"]
+    operator["Оператор парковки"]
+    admin["Адміністратор / технічна служба"]
+    security["Служба безпеки"]
+    system["Система розумної парковки<br/>моніторинг місць, доступ, навігація"]
+    payment["Payment Service"]
+    navigation["Navigation Service"]
+    notify["Notification Service"]
+
+    driver -->|"номер авто, запит вільних місць"| system
+    system -->|"статус, маршрут, результат доступу"| driver
+    operator -->|"ручне керування, підтвердження конфлікту"| system
+    system -->|"стан місць, аварії, відеофрагменти"| operator
+    admin -->|"конфігурація пристроїв"| system
+    system -->|"метрики, журнали, стан вузлів"| admin
+    security -->|"пошук сесій та інцидентів"| system
+    system -->|"журнал подій і дозволені фрагменти"| security
+    system -->|"межі паркувальної сесії"| payment
+    payment -->|"результат оплати"| system
+    system -->|"координати парковки"| navigation
+    navigation -->|"маршрут до парковки"| system
+    system -->|"повідомлення про сесію та інциденти"| notify
+
+    classDef person fill:#eef6ff,stroke:#245a8d,color:#17324d,stroke-width:1.5px;
+    classDef core fill:#dff3e4,stroke:#237a3b,color:#153f20,stroke-width:2px;
+    classDef external fill:#fff4d6,stroke:#9a6b00,color:#4d3900,stroke-width:1.5px;
+    class driver,operator,admin,security person;
+    class system core;
+    class payment,navigation,notify external;

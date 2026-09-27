@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1120" viewBox="0 0 2400 1120" role="img" aria-label="Компонентне подання розумної парковки">
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#526273"/></marker>
+<marker id="arrowStart" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L9,6 L0,3 z" fill="#526273"/></marker>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.14"/></filter>
+</defs>
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="1200.0" y="34" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#17324d">Компонентне подання розумної парковки</text>
+<rect x="30" y="60" width="300" height="1015" rx="16" fill="#f1f7ff" stroke="#7aa7d1" stroke-width="2"/>
+<text x="48" y="90" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#334155">Джерела</text>
+<rect x="360" y="60" width="690" height="1015" rx="16" fill="#effaf1" stroke="#65a978" stroke-width="2"/>
+<text x="378" y="90" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#334155">Периферійне оброблення</text>
+<rect x="1080" y="60" width="760" height="1015" rx="16" fill="#f7f2ff" stroke="#9473c5" stroke-width="2"/>
+<text x="1098" y="90" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#334155">Серверні компоненти</text>
+<rect x="1870" y="60" width="500" height="1015" rx="16" fill="#fff8ed" stroke="#c4972e" stroke-width="2"/>
+<text x="1888" y="90" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#334155">Клієнти та актуатори</text>
+<polyline points="290,155 390,155" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="630,155 690,155" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="930,155 980,155" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1040,190 1120,190" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1360,190 1900,190" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="290,375 390,375" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="630,375 690,375" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="930,375 955,375 955,225 980,225" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1360,190 1395,190 1395,375 1430,375" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1670,375 1900,375" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="290,575 390,575" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="630,575 690,575" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="930,575 1120,575" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1360,575 1430,575" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1670,575 1900,575" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1360,225 1415,225 1415,755 1430,755" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1670,755 1900,755" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1300,225 1300,290 1740,290 1740,875 1900,875" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1900,895 1790,895 1790,375 1670,375" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1240,225 1100,225 1100,860 1210,860 1210,895" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="630,155 660,155 660,755 690,755" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="510,610 510,820 810,820 810,790" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="930,755 1060,755 1060,1060 1380,1060 1380,1017 1430,1017" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1240,225 1240,340" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1360,375 1375,375 1375,1017 1330,1017" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<polyline points="1550,410 1720,410 1720,930 1670,930" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="1360,575 1400,575 1400,930 1430,930" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<polyline points="810,410 960,410 960,1025 1090,1025" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<polyline points="1120,190 1080,190 1080,1017 1090,1017" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<g filter="url(#shadow)">
+<rect x="70" y="120" width="220" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="180.0" y="161.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">IP Cameras</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="70" y="340" width="220" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="180.0" y="381.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Ultrasonic Sensors</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="70" y="540" width="220" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="180.0" y="581.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">LPR Camera</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="390" y="120" width="240" height="70" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="510.0" y="161.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Video Analytics</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="690" y="120" width="240" height="70" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="810.0" y="161.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Time Synchronizer</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="390" y="340" width="240" height="70" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="510.0" y="381.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Sensor Ingest</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="690" y="340" width="240" height="70" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="810.0" y="381.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">MQTT Broker</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="390" y="540" width="240" height="70" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="510.0" y="581.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">LPR Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="690" y="540" width="240" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="810.0" y="581.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Local Event Buffer</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="980" y="120" width="60" height="140" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="1010.0" y="186.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Occupancy</text>
+<text x="1010.0" y="206.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Fusion</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="690" y="720" width="240" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="810.0" y="761.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Local Video Buffer</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1120" y="155" width="240" height="70" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1240.0" y="196.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Parking API</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1120" y="340" width="240" height="70" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1240.0" y="381.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Device Registry</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1430" y="340" width="240" height="70" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1550.0" y="381.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Access Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1120" y="540" width="240" height="70" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1240.0" y="581.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Session Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1430" y="540" width="240" height="70" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1550.0" y="581.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Payment Adapter</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1430" y="720" width="240" height="70" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1550.0" y="761.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Guidance Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1090" y="895" width="240" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="1210.0" y="936.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Metadata DB</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1430" y="895" width="240" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="1550.0" y="936.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Audit Log</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1090" y="990" width="240" height="55" rx="10" fill="#f3eaff" stroke="#6941a5" stroke-width="2"/>
+<text x="1210.0" y="1023.5" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Observability</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1430" y="990" width="240" height="55" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="1550.0" y="1023.5" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Event Media Storage</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1900" y="155" width="400" height="70" rx="10" fill="#ffe8e8" stroke="#a23a3a" stroke-width="2"/>
+<text x="2100.0" y="196.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Driver App</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1900" y="340" width="400" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="2100.0" y="381.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Gate Controller</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1900" y="540" width="400" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="2100.0" y="581.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Payment Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1900" y="720" width="400" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="2100.0" y="761.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Information Board</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1900" y="840" width="400" height="70" rx="10" fill="#ffe8e8" stroke="#a23a3a" stroke-width="2"/>
+<text x="2100.0" y="881.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Operator Dashboard</text>
+</g>
+<rect x="304.0" y="130" width="72.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="340" y="145" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">H.264/RTSP</text>
+<rect x="627.0" y="95" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="660" y="110" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">ознаки</text>
+<rect x="904.6" y="270" width="100.8" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="955" y="285" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">синхронні дані</text>
+<rect x="1044.0" y="165" width="72.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1080" y="180" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">стан місця</text>
+<rect x="1576.0" y="165" width="108.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1630" y="180" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">актуальна карта</text>
+<rect x="307.0" y="350" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="340" y="365" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">1 Гц</text>
+<rect x="624.0" y="315" width="72.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="660" y="330" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">MQTT QoS 1</text>
+<rect x="917.0" y="285" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="950" y="300" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">відліки</text>
+<rect x="1362.0" y="270" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1395" y="285" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">дозвіл</text>
+<rect x="1752.0" y="350" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1785" y="365" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">команда</text>
+<rect x="307.0" y="550" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="340" y="565" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">JPEG</text>
+<rect x="602.4" y="505" width="115.2" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="660" y="520" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">OCR + confidence</text>
+<rect x="989.0" y="550" width="72.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1025" y="565" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">подія з ID</text>
+<rect x="1359.0" y="505" width="72.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1395" y="520" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">межі сесії</text>
+<rect x="1716.6" y="550" width="136.8" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1785" y="565" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">ідемпотентний запит</text>
+<rect x="1382.0" y="675" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1415" y="690" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">стан зон</text>
+<rect x="1752.0" y="730" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1785" y="745" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">напрямок</text>
+<rect x="1707.0" y="835" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1740" y="850" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">API</text>
+<rect x="1736.0" y="635" width="108.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1790" y="650" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">ручне керування</text>
+<rect x="1067.0" y="825" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1100" y="840" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">метадані</text>
+<rect x="624.0" y="685" width="72.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="660" y="700" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">відеокадри</text>
+<rect x="603.2" y="795" width="93.60000000000001" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="650" y="810" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">кадри номерів</text>
+<rect x="1158.8" y="1055" width="122.4" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1220" y="1070" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">подійні фрагменти</text>
+<rect x="1196.8" y="270" width="86.4" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1240" y="285" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">конфігурація</text>
+<rect x="1324.6" y="835" width="100.8" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1375" y="850" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">стан пристроїв</text>
+<rect x="1687.0" y="835" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1720" y="850" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">аудит</text>
+<rect x="1367.0" y="835" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1400" y="850" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">аудит</text>
+<rect x="987.0" y="1000" width="66" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1020" y="1015" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">метрики</text>
+<rect x="1040.4" y="685" width="79.2" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1080" y="700" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">метрики API</text>
+</svg>

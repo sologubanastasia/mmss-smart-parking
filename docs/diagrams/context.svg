@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="900" viewBox="0 0 1700 900" role="img" aria-label="Контекстне подання розумної парковки">
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#526273"/></marker>
+<marker id="arrowStart" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L9,6 L0,3 z" fill="#526273"/></marker>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.14"/></filter>
+</defs>
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="850.0" y="34" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#17324d">Контекстне подання розумної парковки</text>
+<rect x="30" y="65" width="360" height="790" rx="16" fill="#f1f7ff" stroke="#7aa7d1" stroke-width="2"/>
+<text x="48" y="95" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#334155">Зацікавлені сторони</text>
+<rect x="1310" y="65" width="360" height="790" rx="16" fill="#fff9e9" stroke="#c4972e" stroke-width="2"/>
+<text x="1328" y="95" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700" fill="#334155">Зовнішні системи</text>
+<polyline points="355,155 480,155 480,255 600,255" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" marker-start="url(#arrowStart)"/>
+<polyline points="355,335 500,335 500,375 600,375" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" marker-start="url(#arrowStart)"/>
+<polyline points="355,515 500,515 500,525 600,525" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" marker-start="url(#arrowStart)"/>
+<polyline points="355,695 480,695 480,645 600,645" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" marker-start="url(#arrowStart)"/>
+<polyline points="1100,280 1220,280 1220,225 1380,225" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" marker-start="url(#arrowStart)"/>
+<polyline points="1100,445 1240,445 1380,445" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" marker-start="url(#arrowStart)"/>
+<polyline points="1100,610 1220,610 1220,665 1380,665" fill="none" stroke="#526273" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)">
+<rect x="95" y="120" width="260" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="225.0" y="161.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Водій</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="95" y="300" width="260" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="225.0" y="341.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Оператор парковки</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="95" y="480" width="260" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="225.0" y="511.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Адміністратор</text>
+<text x="225.0" y="531.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">/ технічна служба</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="95" y="660" width="260" height="70" rx="10" fill="#eef6ff" stroke="#245a8d" stroke-width="2"/>
+<text x="225.0" y="701.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Служба безпеки</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1380" y="190" width="220" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="1490.0" y="231.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Payment Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1380" y="410" width="220" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="1490.0" y="451.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Navigation Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1380" y="630" width="220" height="70" rx="10" fill="#fff4d6" stroke="#9a6b00" stroke-width="2"/>
+<text x="1490.0" y="671.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Notification Service</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="600" y="180" width="500" height="540" rx="10" fill="#dff3e4" stroke="#237a3b" stroke-width="2"/>
+<text x="850.0" y="446.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">Система розумної парковки</text>
+<text x="850.0" y="466.0" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#172033">моніторинг місць, доступ, навігація</text>
+</g>
+<rect x="372.0" y="130" width="216.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="480" y="145" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">запит місць / статус і маршрут</text>
+<rect x="400.8" y="310" width="158.4" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="480" y="325" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">ручне керування / стан</text>
+<rect x="385.8" y="490" width="158.4" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="465" y="505" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">конфігурація / метрики</text>
+<rect x="388.6" y="670" width="172.8" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="475" y="685" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">пошук / події інцидентів</text>
+<rect x="1153.6" y="255" width="172.8" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1240" y="270" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">сесія / результат оплати</text>
+<rect x="1168.0" y="420" width="144.0" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1240" y="435" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">координати / маршрут</text>
+<rect x="1186.8" y="585" width="86.4" height="21" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1230" y="600" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#334155">повідомлення</text>
+</svg>
