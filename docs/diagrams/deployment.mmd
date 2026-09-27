@@ -1,0 +1,74 @@
+flowchart LR
+    subgraph Devices["Польові пристрої"]
+        cams["IP Cameras<br/>50 × H.264, 1080p, 15 FPS"]
+        platecam["LPR Camera<br/>в'їзд/виїзд"]
+        sensorctl["Sensor Controllers<br/>500 датчиків"]
+    end
+
+    subgraph EdgeNode["Edge-вузол парковки"]
+        video["Video Analytics"]
+        lpr["LPR Service"]
+        fusion["Sensor Ingest + Time Synchronizer<br/>+ Occupancy Fusion"]
+        mqtt["MQTT Broker"]
+        eventBuffer[("Local Event Buffer")]
+        videoBuffer[("Local Video Buffer<br/>2 ТБ, кільцевий буфер 12 год")]
+        syncAgent["Sync Agent"]
+        localMetrics["Local Metrics"]
+    end
+
+    subgraph ServerZone["Серверний сегмент"]
+        lb["Reverse Proxy / Load Balancer"]
+        api1["Parking API instance 1"]
+        api2["Parking API instance 2"]
+        services["Access Service, Session Service,<br/>Guidance Service, Device Registry,<br/>Payment Adapter"]
+        db[("Metadata DB")]
+        media[("Event Media Storage<br/>не менше 8 ТБ")]
+        monitor["Observability + Audit Log"]
+    end
+
+    subgraph Clients["Клієнти та актуатори"]
+        driver["Driver App"]
+        operator["Operator Dashboard"]
+        payment["Payment Service"]
+        gate["Gate Controller"]
+        board["Information Board"]
+    end
+
+    cams -->|"RTSP"| video
+    platecam -->|"RTSP/JPEG"| lpr
+    sensorctl -->|"MQTT QoS 1"| mqtt
+    video --> fusion
+    lpr --> fusion
+    mqtt --> fusion
+    fusion --> eventBuffer
+    video --> videoBuffer
+    lpr --> videoBuffer
+    eventBuffer --> syncAgent
+    videoBuffer --> syncAgent
+    syncAgent -->|"TLS, події та фрагменти"| lb
+    lb --> api1
+    lb --> api2
+    api1 --> services
+    api2 --> services
+    services --> db
+    services --> media
+    services --> monitor
+    localMetrics -.-> monitor
+    mqtt -->|"локальні команди"| gate
+    fusion --> board
+    driver <-->|"HTTPS"| lb
+    operator <-->|"HTTPS"| lb
+    operator -->|"аварійне локальне керування"| mqtt
+    services <-->|"HTTPS, ідемпотентні запити"| payment
+
+    classDef device fill:#eef6ff,stroke:#245a8d,color:#17324d;
+    classDef edge fill:#dff3e4,stroke:#237a3b,color:#153f20;
+    classDef server fill:#f3eaff,stroke:#6941a5,color:#35205a;
+    classDef data fill:#fff4d6,stroke:#9a6b00,color:#4d3900;
+    classDef client fill:#ffe8e8,stroke:#a23a3a,color:#5a2020;
+    class cams,platecam,sensorctl,gate,board device;
+    class video,lpr,fusion,mqtt,syncAgent,localMetrics edge;
+    class eventBuffer,videoBuffer,db,media data;
+    class lb,api1,api2,services,monitor server;
+    class driver,operator client;
+    class payment data;
