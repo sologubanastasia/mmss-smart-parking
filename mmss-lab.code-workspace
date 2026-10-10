@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.encoding": "utf8",
+    "markdown.preview.breaks": true
+  },
+  "extensions": {
+    "recommendations": [
+      "bierner.markdown-mermaid",
+      "yzhang.markdown-all-in-one"
+    ]
+  }
+}
