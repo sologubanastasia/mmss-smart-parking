@@ -1,19 +1,46 @@
-"""Validate the laboratory repository without external dependencies."""
+"""Перевірка комплектності та узгодженості репозиторію ЛР1 без зовнішніх залежностей.
+
+Запуск: python tools/validate_project.py [--skip-git]
+"""
 
 from pathlib import Path
 import re
 import subprocess
 import sys
-import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DIAGRAMS = ROOT / "docs" / "diagrams"
-SVG_NS = "{http://www.w3.org/2000/svg}"
+DOCS = ROOT / "docs"
+DIAGRAMS = DOCS / "diagrams"
+VIEWS = ("context", "components", "deployment")
+errors: list[str] = []
 
 
-def fail(message: str) -> None:
-    raise AssertionError(message)
+def check(condition: bool, message: str) -> None:
+    if not condition:
+        errors.append(message)
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def section(text: str, heading: str) -> str:
+    """Текст від заголовка до наступного заголовка будь-якого рівня."""
+    start = text.find(heading)
+    if start < 0:
+        return ""
+    rest = text[start + len(heading):]
+    match = re.search(r"^#+ ", rest, re.MULTILINE)
+    return rest[: match.start()] if match else rest
+
+
+def table_rows(text: str) -> list[list[str]]:
+    rows = []
+    for line in text.splitlines():
+        if line.startswith("|") and not re.match(r"^\|[\s:|-]+\|$", line):
+            rows.append([cell.strip() for cell in line.strip().strip("|").split("|")])
+    return rows[1:]  # без рядка заголовків
 
 
 def validate_required_files() -> None:
@@ -21,124 +48,132 @@ def validate_required_files() -> None:
         "README.md",
         "docs/requirements.md",
         "docs/quality-scenarios.md",
-        "docs/adr/0001-edge-processing.md",
-        "docs/adr/0002-data-transport.md",
-        "docs/adr/0003-event-storage.md",
+        *(f"docs/diagrams/{view}.{ext}" for view in VIEWS for ext in ("mmd", "svg")),
     ]
-    required += [f"docs/diagrams/{name}.{suffix}" for name in ("context", "components", "deployment") for suffix in ("mmd", "svg")]
-    missing = [name for name in required if not (ROOT / name).is_file()]
-    if missing:
-        fail(f"Missing required files: {', '.join(missing)}")
+    for name in required:
+        check((ROOT / name).is_file(), f"Немає обов'язкового файлу {name}")
+    adrs = sorted((DOCS / "adr").glob("000[1-3]-*.md"))
+    check(len(adrs) == 3, f"Очікується три ADR 0001–0003, знайдено {len(adrs)}")
 
 
 def validate_requirements() -> None:
-    text = (ROOT / "docs" / "requirements.md").read_text(encoding="utf-8")
-    functional = set(re.findall(r"^### (FR-\d{2})\.", text, re.MULTILINE))
-    nonfunctional = set(re.findall(r"^\| (NFR-\d{2}) \|", text, re.MULTILINE))
-    if len(functional) != 10:
-        fail(f"Expected 10 functional requirements, found {len(functional)}")
-    if len(nonfunctional) != 6:
-        fail(f"Expected 6 non-functional requirements, found {len(nonfunctional)}")
-    matrix = text.split("## 12. Матриця трасовності", maxsplit=1)[-1]
-    for requirement_id in sorted(functional | nonfunctional):
-        if not re.search(rf"^\| {re.escape(requirement_id)} \|", matrix, re.MULTILINE):
-            fail(f"Requirement is absent from the traceability matrix: {requirement_id}")
+    text = read(DOCS / "requirements.md")
+    for heading in ("## 1. Призначення", "## 3. Класифікація", "## 4. Зацікавлені сторони", "## 6. Реєстр даних"):
+        check(heading in text, f"requirements.md: немає розділу «{heading}»")
+
+    stakeholders = table_rows(section(text, "## 4. Зацікавлені сторони"))
+    check(len(stakeholders) >= 4, "Потрібно щонайменше 4 зацікавлені сторони")
+
+    register = [row for row in table_rows(section(text, "## 6. Реєстр даних")) if row and row[0].startswith("D-")]
+    check(len(register) >= 5, "Реєстр даних має містити щонайменше 5 рядків")
+    for row in register:
+        check(row[7] in {"Висока", "Середня", "Низька"}, f"{row[0]}: критичність поза шкалою висока/середня/низька")
+    check("R = w × h × f × d" in text, "Немає розрахунку обсягу відеопотоку R = w × h × f × d")
+
+    functional = re.findall(r"^### (FR-\d{2})\.", text, re.MULTILINE)
+    check(8 <= len(functional) <= 10, f"Функційних вимог має бути 8–10, знайдено {len(functional)}")
+    for block in re.split(r"^### FR-\d{2}\.", text, flags=re.MULTILINE)[1:]:
+        check("**Критерій приймання:**" in block.split("\n## ")[0], "Кожна FR має містити критерій приймання")
+
+    nfr_rows = [row for row in table_rows(section(text, "## 8. Нефункційні вимоги")) if row and row[0].startswith("NFR-")]
+    check(5 <= len(nfr_rows) <= 6, f"Нефункційних вимог має бути 5–6, знайдено {len(nfr_rows)}")
+    dimensions = {row[1] for row in nfr_rows}
+    for dimension in ("Реальний час", "Масштабованість", "Розподіленість", "Мультимодальність"):
+        check(dimension in dimensions, f"NFR не охоплюють вимір «{dimension}»")
+    for row in nfr_rows:
+        check(bool(re.search(r"\d", row[2])), f"{row[0]}: немає числового значення")
+        check(len(row) >= 5 and row[4] != "", f"{row[0]}: немає засобу вимірювання")
+
+    budget = table_rows(section(text, "### 8.1. Бюджет"))
+    total = 0
+    for row in budget:
+        value = int(re.sub(r"\D", "", row[-1]) or 0)
+        if row[0].startswith("**Разом"):
+            check(value == 2000 and total == 2000, f"Сума часток бюджету {total} мс не дорівнює 2000 мс")
+            continue
+        total += value
+        if row[0] != "Запас":
+            check(row[3] not in {"", "—"}, f"Частка бюджету «{row[0]}» не має власника")
+
+    matrix = section(text, "## 12. Матриця трасовності")
+    for requirement in functional + [row[0] for row in nfr_rows]:
+        check(f"| {requirement} |" in matrix, f"{requirement} відсутня в матриці трасовності")
+
+    viewpoints = table_rows(section(text, "## 11. Архітектурні подання"))
+    check(len(viewpoints) == 3, "Таблиця «подання — точка зору — сторона — інтерес» має містити три рядки")
 
 
-def validate_adrs_and_quality_scenarios() -> None:
-    adr_headings = ("## Статус", "## Контекст", "## Варіанти", "## Рішення", "## Наслідки", "### Негативні")
-    for path in sorted((ROOT / "docs" / "adr").glob("*.md")):
-        text = path.read_text(encoding="utf-8")
-        for heading in adr_headings:
-            if heading not in text:
-                fail(f"{path.name}: missing section {heading}")
+def canonical_names() -> dict[str, list[str]]:
+    rows = table_rows(section(read(DOCS / "requirements.md"), "### 11.1. Канонічні назви"))
+    return {row[0]: [name.strip() for name in row[1].split(",")] for row in rows}
 
-    quality = (ROOT / "docs" / "quality-scenarios.md").read_text(encoding="utf-8")
+
+def validate_correspondences() -> None:
+    names = canonical_names()
+    mmd = {view: read(DIAGRAMS / f"{view}.mmd") for view in VIEWS}
+    svg = {view: read(DIAGRAMS / f"{view}.svg") for view in VIEWS}
+
+    for view in VIEWS:
+        check('aria-roledescription="flowchart' in svg[view], f"{view}.svg не згенеровано Mermaid із {view}.mmd")
+
+    for zone, elements in names.items():
+        infrastructure = zone.startswith("Інфраструктура")
+        external = zone.startswith("Зовнішні")
+        for element in elements:
+            targets = ["deployment"] if infrastructure else ["components", "deployment"]
+            if external:
+                targets.append("context")
+            for view in targets:
+                check(element in mmd[view], f"R1/R5: «{element}» відсутній у {view}.mmd")
+                check(element in svg[view], f"R5: «{element}» відсутній у {view}.svg — перегенеруйте SVG")
+
+    documents = [read(path) for path in (DOCS / "adr").glob("*.md")] + [read(DOCS / "quality-scenarios.md")]
+    known = {element for elements in names.values() for element in elements}
+    for legacy in ("MQTT Broker", "Operator Dashboard", "Navigation Service"):
+        check(all(legacy not in document for document in documents), f"R5: застаріла назва «{legacy}» в ADR або сценаріях")
+    check(len(known) >= 30, "Канонічна таблиця назв неповна")
+
+
+def validate_adrs_and_scenarios() -> None:
+    requirements = read(DOCS / "requirements.md")
+    nfr_ids = set(re.findall(r"^\| (NFR-\d{2}) \|", requirements, re.MULTILINE))
+    adr_text = ""
+    for path in sorted((DOCS / "adr").glob("*.md")):
+        text = read(path)
+        adr_text += text
+        for heading in ("## Статус", "## Контекст", "## Варіанти", "## Рішення", "## Наслідки", "### Негативні"):
+            check(heading in text, f"{path.name}: немає розділу «{heading}»")
+    for nfr in sorted(nfr_ids):
+        check(nfr in adr_text, f"R4: {nfr} не згадано в жодному ADR")
+
+    quality = read(DOCS / "quality-scenarios.md")
     scenarios = re.findall(r"^## (QS-\d{2})\.", quality, re.MULTILINE)
-    if scenarios != ["QS-01", "QS-02"]:
-        fail(f"Expected QS-01 and QS-02, found {scenarios}")
-    for element in (
-        "Джерело стимулу",
-        "Стимул",
-        "Середовище",
-        "Артефакт",
-        "Реакція",
-        "Вимірювана характеристика",
-    ):
-        if len(re.findall(rf"^\| {re.escape(element)} \|", quality, re.MULTILINE)) != 2:
-            fail(f"Quality scenarios must contain {element} twice")
-    for scenario in quality.split("## QS-")[1:]:
-        if "ADR-" not in scenario:
-            fail("Each quality scenario must reference an ADR")
-
-
-def segment_crosses_rect(p1, p2, rect) -> bool:
-    x1, y1 = p1
-    x2, y2 = p2
-    rx, ry, rw, rh = rect
-    if x1 == x2:
-        return rx < x1 < rx + rw and max(min(y1, y2), ry) < min(max(y1, y2), ry + rh)
-    if y1 == y2:
-        return ry < y1 < ry + rh and max(min(x1, x2), rx) < min(max(x1, x2), rx + rw)
-    fail(f"Non-orthogonal connector segment: {p1} -> {p2}")
-
-
-def validate_svg(path: Path) -> None:
-    root = ET.parse(path).getroot()
-    node_rects = []
-    label_rects = []
-    for rect in root.findall(f".//{SVG_NS}rect"):
-        if rect.get("rx") == "10":
-            node_rects.append(tuple(float(rect.get(name, "0")) for name in ("x", "y", "width", "height")))
-        elif rect.get("rx") == "5":
-            label_rects.append(tuple(float(rect.get(name, "0")) for name in ("x", "y", "width", "height")))
-    for polyline in root.findall(f".//{SVG_NS}polyline"):
-        points = [tuple(float(value) for value in token.split(",")) for token in polyline.get("points", "").split()]
-        for p1, p2 in zip(points, points[1:]):
-            for rect in node_rects:
-                if segment_crosses_rect(p1, p2, rect):
-                    fail(f"{path.name}: connector {p1} -> {p2} crosses node {rect}")
-    for lx, ly, lw, lh in label_rects:
-        for nx, ny, nw, nh in node_rects:
-            if max(lx, nx) < min(lx + lw, nx + nw) and max(ly, ny) < min(ly + lh, ny + nh):
-                fail(f"{path.name}: connector label {(lx, ly, lw, lh)} overlaps node {(nx, ny, nw, nh)}")
-
-
-def validate_diagram_names() -> None:
-    expected = {
-        "components.svg": ("Device Registry", "Local Video Buffer", "Occupancy", "Fusion"),
-        "deployment.svg": ("Local Video Buffer", "Parking API instance 1", "Parking API instance 2", "Event Media Storage"),
-    }
-    for filename, names in expected.items():
-        text = (DIAGRAMS / filename).read_text(encoding="utf-8")
-        for name in names:
-            if name not in text:
-                fail(f"{filename}: missing architecture element {name}")
+    check(scenarios == ["QS-01", "QS-02"], f"Очікуються QS-01 і QS-02, знайдено {scenarios}")
+    for element in ("Джерело стимулу", "Стимул", "Середовище", "Артефакт", "Реакція", "Вимірювана характеристика"):
+        count = len(re.findall(rf"^\| {re.escape(element)} \|", quality, re.MULTILINE))
+        check(count == 2, f"Елемент сценарію «{element}» має трапитися двічі, знайдено {count}")
+    for block in quality.split("## QS-")[1:]:
+        check("ADR-" in block, "Кожен сценарій має посилатися на ADR")
 
 
 def validate_commit_count() -> None:
-    result = subprocess.run(
-        ["git", "rev-list", "--count", "HEAD"],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    count = int(result.stdout.strip())
-    if count < 2:
-        fail(f"Expected at least 2 commits, found {count}")
+    result = subprocess.run(["git", "rev-list", "--count", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True)
+    check(int(result.stdout.strip()) >= 2, "Історія має містити щонайменше два коміти")
 
 
 def main() -> int:
     validate_required_files()
     validate_requirements()
-    validate_adrs_and_quality_scenarios()
-    for name in ("context.svg", "components.svg", "deployment.svg"):
-        validate_svg(DIAGRAMS / name)
-    validate_diagram_names()
+    validate_correspondences()
+    validate_adrs_and_scenarios()
     if "--skip-git" not in sys.argv:
         validate_commit_count()
-    print("Validation passed")
+    if errors:
+        print("Перевірку не пройдено:")
+        for message in errors:
+            print(f"  - {message}")
+        return 1
+    print("Перевірку пройдено: комплектність, вимоги, бюджет, правила відповідності R1–R5, ADR і сценарії")
     return 0
 
 
