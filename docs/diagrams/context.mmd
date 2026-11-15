@@ -1,30 +1,37 @@
+---
+title: Контекстне подання — система розумної парковки (рівень 1 C4)
+config:
+  layout: elk
+---
 flowchart LR
+    env["Фізичне середовище<br/>автомобілі на в'їзді, виїзді й паркомісцях"]
     driver["Водій"]
     operator["Оператор парковки"]
-    admin["Адміністратор / технічна служба"]
     security["Служба безпеки"]
-    system["Система розумної парковки<br/>моніторинг місць, доступ, навігація"]
-    payment["Payment Service"]
-    navigation["Navigation Service"]
-    notify["Notification Service"]
+    admin["Адміністратор /<br/>технічна служба"]
+    owner["Власник парковки"]
+    dpo["Фахівець із захисту даних"]
 
-    driver -->|"номер авто, запит вільних місць"| system
-    system -->|"статус, маршрут, результат доступу"| driver
-    operator -->|"ручне керування, підтвердження конфлікту"| system
-    system -->|"стан місць, аварії, відеофрагменти"| operator
-    admin -->|"конфігурація пристроїв"| system
-    system -->|"метрики, журнали, стан вузлів"| admin
-    security -->|"пошук сесій та інцидентів"| system
-    system -->|"журнал подій і дозволені фрагменти"| security
-    system -->|"межі паркувальної сесії"| payment
-    payment -->|"результат оплати"| system
-    system -->|"координати парковки"| navigation
-    navigation -->|"маршрут до парковки"| system
-    system -->|"повідомлення про сесію та інциденти"| notify
+    system["Система розумної парковки<br/>[програмно-апаратний комплекс]<br/>визначення зайнятості, доступ, навігація"]
+
+    payment["Payment Service<br/>[зовнішня система]"]
+    notify["Notification Service<br/>[зовнішня система]"]
+
+    env <-->|"→ присутність авто, номер (світло, ультразвук)<br/>← відкриття шлагбаума, показ табло"| system
+    driver <-->|"→ запит вільних місць і маршруту<br/>← карта місць, маршрут, лічильники зон"| system
+    operator <-->|"→ ручне керування, розв'язання конфліктів<br/>← стан місць, конфлікти, запити на в'їзд"| system
+    security <-->|"→ пошук сесій та інцидентів<br/>← сесії, дозволені відеофрагменти"| system
+    admin <-->|"→ конфігурація пристроїв<br/>← стан пристроїв, метрики, журнали"| system
+    owner <-->|"→ запит звітів<br/>← звіти про використання"| system
+    dpo <-->|"→ запит журналу доступу<br/>← журнал аудиту, звіт про строки зберігання"| system
+    system <-->|"→ межі сесії (HTTPS, ідемпотентно)<br/>← результат оплати"| payment
+    system -->|"→ сповіщення водіям і техслужбі (HTTPS)"| notify
 
     classDef person fill:#eef6ff,stroke:#245a8d,color:#17324d,stroke-width:1.5px;
-    classDef core fill:#dff3e4,stroke:#237a3b,color:#153f20,stroke-width:2px;
+    classDef physical fill:#f1f5f9,stroke:#475569,color:#1e293b,stroke-width:1.5px,stroke-dasharray:6 4;
+    classDef core fill:#dff3e4,stroke:#237a3b,color:#153f20,stroke-width:2.5px;
     classDef external fill:#fff4d6,stroke:#9a6b00,color:#4d3900,stroke-width:1.5px;
-    class driver,operator,admin,security person;
+    class driver,operator,security,admin,owner,dpo person;
+    class env physical;
     class system core;
-    class payment,navigation,notify external;
+    class payment,notify external;

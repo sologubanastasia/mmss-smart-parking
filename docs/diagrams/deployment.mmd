@@ -1,74 +1,104 @@
+---
+title: Подання розгортання — система розумної парковки
+config:
+  layout: elk
+---
 flowchart LR
-    subgraph Devices["Польові пристрої"]
-        cams["IP Cameras<br/>50 × H.264, 1080p, 15 FPS"]
-        platecam["LPR Camera<br/>в'їзд/виїзд"]
-        sensorctl["Sensor Controllers<br/>500 датчиків"]
+    subgraph Field["Польові пристрої (територія парковки)"]
+        cams["IP Cameras ×50<br/>1080p15 3 Мбіт/с + 360p5 0,5 Мбіт/с"]
+        lprcams["LPR Cameras ×2<br/>1080p25, 4 Мбіт/с"]
+        sensors["Ultrasonic Sensors ×500"]
+        sensorctl["Sensor Controllers ×50<br/>по 10 датчиків"]
+        gate["Gate Controller ×2<br/>безпечний стан: закрито"]
+        board["Information Board ×6"]
     end
 
-    subgraph EdgeNode["Edge-вузол парковки"]
-        video["Video Analytics"]
-        lpr["LPR Service"]
-        fusion["Sensor Ingest + Time Synchronizer<br/>+ Occupancy Fusion"]
-        mqtt["MQTT Broker"]
-        eventBuffer[("Local Event Buffer")]
-        videoBuffer[("Local Video Buffer<br/>2 ТБ, кільцевий буфер 12 год")]
-        syncAgent["Sync Agent"]
+    subgraph EdgeNode["Edge Node — технічне приміщення парковки<br/>16 CPU, GPU, 64 ГБ ОЗП"]
+        video["Video Analytics (GPU)"]
+        lpr["LPR Service (GPU)"]
+        tbroker["Telemetry Broker"]
+        ingest["Sensor Ingest"]
+        sync["Time Synchronizer<br/>NTP-сервер"]
+        fusion["Occupancy Fusion"]
+        edgeAccess["Edge Access Control"]
+        cbroker["Control Broker"]
+        eventBuffer[("Local Event Buffer<br/>SSD 256 ГБ")]
+        videoBuffer[("Local Video Buffer<br/>SSD 2 ТБ, шифрування, 12 год")]
+        syncAgent["Sync Agent<br/>ліміт 60 Мбіт/с"]
         localMetrics["Local Metrics"]
     end
 
-    subgraph ServerZone["Серверний сегмент"]
+    subgraph Server["Серверний сегмент (дата-центр)"]
         lb["Reverse Proxy / Load Balancer"]
-        api1["Parking API instance 1"]
-        api2["Parking API instance 2"]
-        services["Access Service, Session Service,<br/>Guidance Service, Device Registry,<br/>Payment Adapter"]
-        db[("Metadata DB")]
-        media[("Event Media Storage<br/>не менше 8 ТБ")]
-        monitor["Observability + Audit Log"]
+        subgraph ApiNodes["API Nodes ×2"]
+            api1["Parking API instance 1"]
+            api2["Parking API instance 2"]
+        end
+        subgraph AppNode["App Node"]
+            access["Access Service"]
+            sessions["Session Service"]
+            guidance["Guidance Service"]
+            devices["Device Registry"]
+            paymentAdapter["Payment Adapter"]
+        end
+        db[("Metadata DB<br/>Data Node")]
+        media[("Event Media Storage<br/>об'єктне сховище, 10 ТБ")]
+        subgraph OpsNode["Ops Node"]
+            obs["Observability"]
+            audit[("Audit Log")]
+        end
     end
 
-    subgraph Clients["Клієнти та актуатори"]
-        driver["Driver App"]
-        operator["Operator Dashboard"]
-        payment["Payment Service"]
-        gate["Gate Controller"]
-        board["Information Board"]
+    subgraph Clients["Клієнтські пристрої"]
+        app["Driver App<br/>смартфон"]
+        console["Web Console<br/>ПК персоналу на парковці"]
     end
 
-    cams -->|"RTSP"| video
-    platecam -->|"RTSP/JPEG"| lpr
-    sensorctl -->|"MQTT QoS 1"| mqtt
-    video --> fusion
-    lpr --> fusion
-    mqtt --> fusion
-    fusion --> eventBuffer
-    video --> videoBuffer
-    lpr --> videoBuffer
-    eventBuffer --> syncAgent
-    videoBuffer --> syncAgent
-    syncAgent -->|"TLS, події та фрагменти"| lb
-    lb --> api1
-    lb --> api2
-    api1 --> services
-    api2 --> services
-    services --> db
-    services --> media
-    services --> monitor
-    localMetrics -.-> monitor
-    mqtt -->|"локальні команди"| gate
-    fusion --> board
-    driver <-->|"HTTPS"| lb
-    operator <-->|"HTTPS"| lb
-    operator -->|"аварійне локальне керування"| mqtt
-    services <-->|"HTTPS, ідемпотентні запити"| payment
+    subgraph External["Зовнішні системи"]
+        paymentService["Payment Service"]
+        notify["Notification Service"]
+    end
+
+    cams -->|"RTSP, VLAN відео 1 Гбіт/с: 25 Мбіт/с"| video
+    cams -->|"RTSP, VLAN відео: 150 Мбіт/с"| videoBuffer
+    lprcams -->|"RTSP, VLAN відео: 8 Мбіт/с"| lpr
+    sensors -->|"RS-485, 10 Гц"| sensorctl
+    sensorctl -->|"MQTT QoS 1 + TLS, VLAN керування"| tbroker
+    tbroker -->|"MQTT, лічильники зон"| board
+    cbroker -->|"MQTT QoS 1 + TLS, VLAN керування"| gate
+    gate -->|"підтвердження"| cbroker
+    sync -.->|"NTP, похибка ≤ 10 мс"| cams
+    sync -.->|"NTP"| sensorctl
+
+    syncAgent <-->|"HTTPS / TLS 1.3, WAN 100 Мбіт/с:<br/>події й фрагменти ↑, політики доступу ↓"| lb
+    localMetrics -.->|"HTTPS, WAN: метрики, heartbeat"| obs
+    console -->|"HTTPS, LAN парковки: ручне керування"| edgeAccess
+
+    lb -->|"події, запити клієнтів"| api1
+    lb -->|"події, запити клієнтів"| api2
+    lb -->|"фрагменти"| media
+    ApiNodes -->|"gRPC / TLS"| AppNode
+    ApiNodes -->|"SQL / TLS"| db
+    AppNode -->|"SQL / TLS"| db
+    ApiNodes -->|"S3 API / TLS"| media
+    ApiNodes -->|"записи доступу"| audit
+    AppNode -->|"записи аудиту"| audit
+
+    app <-->|"HTTPS / WSS, інтернет"| lb
+    console <-->|"HTTPS / WSS, WAN"| lb
+    paymentAdapter <-->|"HTTPS, ідемпотентні запити"| paymentService
+    sessions -->|"HTTPS"| notify
+    obs -->|"HTTPS"| notify
 
     classDef device fill:#eef6ff,stroke:#245a8d,color:#17324d;
     classDef edge fill:#dff3e4,stroke:#237a3b,color:#153f20;
     classDef server fill:#f3eaff,stroke:#6941a5,color:#35205a;
     classDef data fill:#fff4d6,stroke:#9a6b00,color:#4d3900;
     classDef client fill:#ffe8e8,stroke:#a23a3a,color:#5a2020;
-    class cams,platecam,sensorctl,gate,board device;
-    class video,lpr,fusion,mqtt,syncAgent,localMetrics edge;
-    class eventBuffer,videoBuffer,db,media data;
-    class lb,api1,api2,services,monitor server;
-    class driver,operator client;
-    class payment data;
+    classDef external fill:#f1f5f9,stroke:#475569,color:#1e293b;
+    class cams,lprcams,sensors,sensorctl,gate,board device;
+    class video,lpr,tbroker,ingest,sync,fusion,edgeAccess,cbroker,syncAgent,localMetrics edge;
+    class eventBuffer,videoBuffer,db,media,audit data;
+    class lb,api1,api2,access,sessions,guidance,devices,paymentAdapter,obs server;
+    class app,console client;
+    class paymentService,notify external;

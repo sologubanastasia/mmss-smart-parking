@@ -1,19 +1,34 @@
+---
+title: Компонентне подання — система розумної парковки
+config:
+  layout: elk
+---
 flowchart LR
-    subgraph Sources["Джерела даних"]
+    subgraph Sensing["Польові пристрої: сприйняття"]
         cams["IP Cameras"]
-        platecam["LPR Camera"]
+        lprcams["LPR Cameras"]
         sensors["Ultrasonic Sensors"]
+        sensorctl["Sensor Controllers"]
     end
 
-    subgraph Edge["Периферійне оброблення"]
+    subgraph Edge["Периферійне оброблення (edge)"]
         video["Video Analytics"]
         lpr["LPR Service"]
+        tbroker["Telemetry Broker"]
         ingest["Sensor Ingest"]
         sync["Time Synchronizer"]
         fusion["Occupancy Fusion"]
-        buffer["Local Event Buffer"]
-        videoBuffer["Local Video Buffer"]
-        mqtt["MQTT Broker"]
+        edgeAccess["Edge Access Control<br/>кеш політик доступу"]
+        cbroker["Control Broker"]
+        eventBuffer[("Local Event Buffer")]
+        videoBuffer[("Local Video Buffer")]
+        syncAgent["Sync Agent"]
+        localMetrics["Local Metrics"]
+    end
+
+    subgraph Acting["Польові пристрої: вплив"]
+        gate["Gate Controller"]
+        board["Information Board"]
     end
 
     subgraph Core["Серверні компоненти"]
@@ -22,63 +37,79 @@ flowchart LR
         sessions["Session Service"]
         guidance["Guidance Service"]
         devices["Device Registry"]
-        payment["Payment Adapter"]
+        paymentAdapter["Payment Adapter"]
         db[("Metadata DB")]
-        objects[("Event Media Storage")]
+        media[("Event Media Storage")]
         audit[("Audit Log")]
         obs["Observability"]
     end
 
-    subgraph Clients["Клієнти та актуатори"]
+    subgraph Clients["Клієнти"]
         app["Driver App"]
-        dashboard["Operator Dashboard"]
-        gate["Gate Controller"]
-        board["Information Board"]
-        paymentService["Payment Service"]
+        console["Web Console<br/>ролі: оператор, безпека,<br/>адміністратор, власник, DPO"]
     end
 
-    cams -->|"H.264/RTSP"| video
-    platecam -->|"JPEG/RTSP"| lpr
-    sensors -->|"відліки"| ingest
-    ingest --> mqtt
-    video --> sync
-    lpr --> sync
-    mqtt --> sync
-    sync --> fusion
-    fusion --> buffer
-    lpr --> buffer
-    video --> videoBuffer
-    lpr --> videoBuffer
-    videoBuffer -->|"подійні фрагменти"| objects
-    buffer -->|"події з ID"| api
-    api --> db
+    subgraph External["Зовнішні системи"]
+        paymentService["Payment Service"]
+        notify["Notification Service"]
+    end
+
+    cams -->|"допоміжний потік 360p, RTSP"| video
+    cams -->|"основний потік 1080p, RTSP"| videoBuffer
+    lprcams -->|"RTSP"| lpr
+    sensors -->|"відліки 10 Гц"| sensorctl
+    sensorctl -->|"пакети 1 Гц і події, MQTT QoS 1"| tbroker
+    tbroker -->|"відліки"| ingest
+    sync -.->|"NTP"| cams
+    sync -.->|"NTP"| sensorctl
+    video -->|"ознаки з мітками часу"| sync
+    ingest -->|"відліки з мітками часу"| sync
+    sync -->|"вирівняні події"| fusion
+    fusion -->|"стан місця"| eventBuffer
+    fusion -->|"лічильники зон"| tbroker
+    tbroker -->|"лічильники зон"| board
+    lpr -->|"номер і confidence"| edgeAccess
+    lpr -->|"кадри номерів"| videoBuffer
+    edgeAccess -->|"команда, TTL 5 с"| cbroker
+    cbroker -->|"команда"| gate
+    gate -->|"підтвердження"| cbroker
+    edgeAccess -->|"події в'їзду й виїзду"| eventBuffer
+    eventBuffer -->|"outbox"| syncAgent
+    videoBuffer -->|"подійні фрагменти"| syncAgent
+    syncAgent -->|"події з ID"| api
+    syncAgent -->|"фрагменти"| media
+    access -->|"політики доступу"| syncAgent
+    syncAgent -->|"кеш політик"| edgeAccess
+    localMetrics -->|"метрики, heartbeat"| obs
+
     api --> access
     api --> sessions
     api --> guidance
     api --> devices
-    sessions --> payment
-    payment --> paymentService
-    access -->|"команда QoS 1"| mqtt
-    mqtt --> gate
-    guidance --> board
-    api --> app
-    api --> dashboard
-    dashboard -->|"ручне перехоплення"| access
-    access --> audit
-    sessions --> audit
-    devices --> obs
-    mqtt --> obs
-    api --> obs
+    api -->|"стани місць"| db
+    sessions -->|"сесії"| db
+    sessions --> paymentAdapter
+    paymentAdapter -->|"межі сесії"| paymentService
+    sessions -->|"сповіщення водію"| notify
+    devices -->|"перелік пристроїв і зон"| obs
+    obs -->|"тривоги"| notify
+    api -->|"медіа після перевірки ролі"| media
+    api -->|"записи доступу"| audit
+    access -->|"зміни політик і ручні дії"| audit
+
+    api <-->|"HTTPS / WebSocket"| app
+    api <-->|"HTTPS / WebSocket"| console
+    console -->|"ручне керування, LAN"| edgeAccess
 
     classDef source fill:#eef6ff,stroke:#245a8d,color:#17324d;
     classDef edge fill:#dff3e4,stroke:#237a3b,color:#153f20;
     classDef core fill:#f3eaff,stroke:#6941a5,color:#35205a;
     classDef data fill:#fff4d6,stroke:#9a6b00,color:#4d3900;
     classDef client fill:#ffe8e8,stroke:#a23a3a,color:#5a2020;
-    class cams,platecam,sensors source;
-    class video,lpr,ingest,sync,fusion,mqtt edge;
-    class buffer,videoBuffer,db,objects,audit data;
-    class api,access,sessions,guidance,devices,payment,obs core;
-    class app,dashboard client;
-    class gate,board source;
-    class paymentService data;
+    classDef external fill:#f1f5f9,stroke:#475569,color:#1e293b;
+    class cams,lprcams,sensors,sensorctl,gate,board source;
+    class video,lpr,tbroker,ingest,sync,fusion,edgeAccess,cbroker,syncAgent,localMetrics edge;
+    class eventBuffer,videoBuffer,db,media,audit data;
+    class api,access,sessions,guidance,devices,paymentAdapter,obs core;
+    class app,console client;
+    class paymentService,notify external;
