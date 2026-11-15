@@ -1,6 +1,11 @@
 # Розумна парковка з визначенням вільних місць
 
-Лабораторна робота № 1 з дисципліни **«Архітектури мультимедійних та смартсистем»**: аналіз предметної області та архітектурний опис за ISO/IEC/IEEE 42010:2022.
+Комплексна робота з дисципліни **«Архітектури мультимедійних та смартсистем»**:
+
+| Лабораторна | Тема | Результати |
+|---|---|---|
+| ЛР1 | Аналіз предметної області та архітектурний опис за ISO/IEC/IEEE 42010:2022 | [requirements.md](docs/requirements.md), [діаграми](#діаграми), ADR-0001–0003, [сценарії якості](docs/quality-scenarios.md) |
+| ЛР2 | Конвеєр оброблення та адаптивне потокове передавання | [pipeline.md](docs/pipeline.md), [qoe.md](docs/qoe.md), [ADR-0004](docs/adr/0004-stream-ladder.md), [розділ нижче](#лр2-конвеєр-і-потокове-передавання) |
 
 Система визначає зайнятість 500 паркомісць за відео й ультразвуковими датчиками, розпізнає номери на в'їзді та виїзді, керує шлагбаумом і табло та показує водіям вільні місця. Ця предметна область зберігається в лабораторних роботах 1–4.
 
@@ -26,6 +31,31 @@
 | [docs/adr/0003-event-storage.md](docs/adr/0003-event-storage.md) | ADR-0003: подійне зберігання й розділення сховищ |
 | [docs/quality-scenarios.md](docs/quality-scenarios.md) | Дерево корисності, QS-01 (швидкодія), QS-02 (доступність), результати спрощеного ATAM |
 | [docs/defense-notes.md](docs/defense-notes.md) | Відповіді на контрольні запитання |
+
+## ЛР2: конвеєр і потокове передавання
+
+Потрібні FFmpeg 6+ (з `libx264` і `libsvtav1` або `libaom-av1`), Python 3.10+ і Node.js 18+ (лише для автоматизованого прогону QoE). Медіафайли (`data/`) і сегменти потоку в репозиторій не входять — їх відтворюють командами нижче.
+
+```bash
+python -m venv .venv && source .venv/Scripts/activate     # Linux, macOS: .venv/bin/activate
+pip install -r pipeline/requirements.txt
+python pipeline/pipeline.py      # еталон, 4 варіанти кодування → results/encoding.csv
+python pipeline/sweep.py         # додатково: 8 точок і BD-rate → results/encoding_sweep.csv
+bash stream/package.sh hls       # драбина 1080p/720p/360p → stream/hls/
+bash stream/package.sh dash      # те саме для MPEG-DASH → stream/dash/
+cd stream && python -m http.server 8000                    # http://localhost:8000/player.html
+```
+
+Показники QoE знімаються вручну в DevTools (Network → Throttling, профілі П1–П3) або тим самим механізмом автоматично: `cd tools/qoe && npm install && node measure_qoe.mjs` (сервер має працювати) → `results/qoe.csv`, `results/qoe_extra.csv`.
+
+| Файл | Зміст |
+|---|---|
+| [pipeline/pipeline.py](pipeline/pipeline.py) | Декодування (OpenCV) → перетворення й `process()` → еталон без втрат → H.264/AV1 → PSNR, SSIM |
+| [pipeline/sweep.py](pipeline/sweep.py) | Криві «бітрейт — якість» і BD-rate AV1 відносно H.264 |
+| [stream/package.sh](stream/package.sh), [stream/player.html](stream/player.html) | Драбина якостей і сегменти HLS/DASH; плеєр hls.js/dash.js з обліком QoE |
+| [results/](results) | `encoding.csv`, `encoding_sweep.csv`, `qoe.csv`, `qoe_extra.csv` |
+| [docs/pipeline.md](docs/pipeline.md), [docs/qoe.md](docs/qoe.md) | Звіти занять 1 і 2 |
+| [docs/adr/0004-stream-ladder.md](docs/adr/0004-stream-ladder.md) | Рішення щодо кодека, драбини, сегмента й початкового рівня |
 
 ## Діаграми
 
@@ -79,12 +109,19 @@ mmss-lab/
 │   │   ├── 0001-edge-processing.md
 │   │   ├── 0002-data-transport.md
 │   │   └── 0003-event-storage.md
+│   ├── pipeline.md                  # ЛР2, заняття 1
+│   ├── qoe.md                       # ЛР2, заняття 2
+│   ├── adr/0004-stream-ladder.md    # ЛР2
 │   └── diagrams/
 │       ├── context.mmd      context.svg
 │       ├── components.mmd   components.svg
 │       └── deployment.mmd   deployment.svg
+├── pipeline/                        # ЛР2: pipeline.py, sweep.py, requirements.txt
+├── stream/                          # ЛР2: package.sh, player.html, vendor/, маніфести hls/ і dash/
+├── results/                         # ЛР2: encoding.csv, encoding_sweep.csv, qoe.csv, qoe_extra.csv
 └── tools/
-    └── validate_project.py
+    ├── validate_project.py
+    └── qoe/                         # ЛР2: автоматизований прогін QoE (Puppeteer)
 ```
 
 ## Історія версій опису

@@ -156,6 +156,44 @@ def validate_adrs_and_scenarios() -> None:
         check("ADR-" in block, "Кожен сценарій має посилатися на ADR")
 
 
+def validate_lab2() -> None:
+    """Контрольний список здачі ЛР2 (виконується, якщо робота вже розпочата)."""
+    if not (ROOT / "pipeline").exists():
+        return
+    required = [
+        "pipeline/pipeline.py", "pipeline/requirements.txt", "results/encoding.csv",
+        "docs/pipeline.md", "stream/package.sh", "stream/player.html",
+        "stream/vendor/hls.min.js", "stream/vendor/dash.all.min.js", "stream/hls/master.m3u8",
+        "results/qoe.csv", "docs/qoe.md",
+    ]
+    for name in required:
+        check((ROOT / name).is_file(), f"ЛР2: немає файлу {name}")
+    check(len(list((DOCS / "adr").glob("0004-*.md"))) == 1, "ЛР2: потрібен один ADR 0004-*.md")
+
+    gitignore = read(ROOT / ".gitignore")
+    for pattern in (".venv/", "data/", "stream/hls/**/*.ts", "stream/dash/*.m4s"):
+        check(pattern in gitignore, f"ЛР2: .gitignore не виключає {pattern}")
+
+    if (ROOT / "results/encoding.csv").is_file():
+        rows = read(ROOT / "results/encoding.csv").strip().splitlines()[1:]
+        codecs = sorted(row.split(",")[1] for row in rows)
+        check(codecs == ["av1", "av1", "h264", "h264"], f"ЛР2: encoding.csv має містити 2×H.264 і 2×AV1, знайдено {codecs}")
+    if (ROOT / "results/qoe.csv").is_file():
+        lines = read(ROOT / "results/qoe.csv").strip().splitlines()
+        check(lines[0] == "profile,startup_s,switches,stalls,stall_s,avg_kbps", "ЛР2: неправильний заголовок qoe.csv")
+        profiles = [line.split(",")[0] for line in lines[1:]]
+        for profile in ("П1", "П2", "П3"):
+            check(profiles.count(profile) >= 2, f"ЛР2: профіль {profile} має бути виміряний щонайменше двічі")
+    master = ROOT / "stream/hls/master.m3u8"
+    if master.is_file():
+        check(read(master).count("#EXT-X-STREAM-INF") == 3, "ЛР2: master.m3u8 має містити три рівні якості")
+    for name, headings in (("docs/pipeline.md", ("## Вихідний матеріал", "## Конвеєр", "## Порівняння варіантів")),
+                           ("docs/qoe.md", ("## Зв’язок з архітектурою",))):  # апостроф ’ — як у методичці
+        if (ROOT / name).is_file():
+            for heading in headings:
+                check(heading in read(ROOT / name), f"ЛР2: {name} не містить розділу «{heading[3:]}»")
+
+
 def validate_commit_count() -> None:
     result = subprocess.run(["git", "rev-list", "--count", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True)
     check(int(result.stdout.strip()) >= 2, "Історія має містити щонайменше два коміти")
@@ -166,6 +204,7 @@ def main() -> int:
     validate_requirements()
     validate_correspondences()
     validate_adrs_and_scenarios()
+    validate_lab2()
     if "--skip-git" not in sys.argv:
         validate_commit_count()
     if errors:

@@ -1,0 +1,12 @@
+profile,startup_s,switches,stalls,stall_s,avg_kbps
+П2 hls start=auto,1.57,0,0,0.0,729
+П2 hls start=auto,2.16,1,0,0.0,762
+П3 hls start=auto,2.76,0,0,0.0,198
+П3 hls start=auto,2.73,0,0,0.0,198
+П1 dash,0.25,1,0,0.0,1494
+П2 dash,1.63,1,0,0.0,701
+П3 dash,4.67,1,0,0.0,216
+П1 hls start=low,0.39,1,0,0.0,1625
+П2 hls start=low,0.71,1,0,0.0,710
+П3 hls start=low,1.78,0,0,0.0,198
+П3 hls start=low,1.80,0,0,0.0,198
