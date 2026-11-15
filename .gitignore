@@ -2,3 +2,11 @@
 *.qa.png
 .DS_Store
 Thumbs.db
+
+# ЛР2: середовище Python, медіафайли й сегменти потоку
+.venv/
+data/
+stream/hls/**/*.ts
+stream/dash/*.m4s
+__pycache__/
+node_modules/
