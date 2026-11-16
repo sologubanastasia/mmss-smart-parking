@@ -194,6 +194,57 @@ def validate_lab2() -> None:
                 check(heading in read(ROOT / name), f"ЛР2: {name} не містить розділу «{heading[3:]}»")
 
 
+def validate_lab3() -> None:
+    """Контрольний список здачі ЛР3 (виконується, якщо робота вже розпочата)."""
+    if not (ROOT / "smart").exists():
+        return
+    required = [
+        "smart/broker/mosquitto.conf", "smart/docker-compose.yml", "smart/Dockerfile",
+        "smart/requirements.txt", "smart/sensors.py", "smart/collector.py", "smart/stats.py",
+        "smart/gateway.py", "smart/loadtest.sh", "smart/plot.py",
+        "results/load.csv", "results/latency.png", "docs/telemetry.md", "docs/deployment.md",
+    ]
+    for name in required:
+        check((ROOT / name).is_file(), f"ЛР3: немає файлу {name}")
+    for number in ("0005", "0006"):
+        check(len(list((DOCS / "adr").glob(f"{number}-*.md"))) == 1, f"ЛР3: потрібен один ADR {number}-*.md")
+
+    compose = ROOT / "smart/docker-compose.yml"
+    if compose.is_file():
+        text = read(compose)
+        for service in ("edge-broker:", "sensors:", "gateway:", "cloud-broker:", "collector:"):
+            check(service in text, f"ЛР3: docker-compose.yml не містить сервісу {service[:-1]}")
+        check("networks: [edge, cloud]" in text, "ЛР3: лише шлюз має бути в обох мережах edge і cloud")
+        check("cpus:" in text and "mem_limit:" in text, "ЛР3: немає лімітів ресурсів периферії")
+        check('"127.0.0.1:1883:1883"' in text, "ЛР3: порт брокера має бути опублікований лише на 127.0.0.1")
+    sensors = ROOT / "smart/sensors.py"
+    if sensors.is_file():
+        for field in ('"dev"', '"boot"', '"seq"', '"ts"'):
+            check(field in read(sensors), f"ЛР3: схема повідомлення не містить поля {field}")
+    if (ROOT / "smart/loadtest.sh").is_file():
+        check(b"\r\n" not in (ROOT / "smart/loadtest.sh").read_bytes(), "ЛР3: loadtest.sh має бути з кінцями рядків LF")
+
+    load = ROOT / "results/load.csv"
+    if load.is_file():
+        lines = read(load).strip().splitlines()
+        check(lines[0] == "boot,rate,sent,received,loss,late,dup,lat_mean_ms,lat_p95_ms,lat_max_ms",
+              "ЛР3: неправильний заголовок load.csv")
+        check(len(lines) - 1 == 9, f"ЛР3: load.csv має містити 9 ступенів, знайдено {len(lines) - 1}")
+    png = ROOT / "results/latency.png"
+    if png.is_file():
+        check(png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n", "ЛР3: latency.png не є PNG")
+
+    for name, headings in (
+        ("docs/telemetry.md", ("## Теми", "## Схема повідомлення", "## Політика оброблення помилок", "## Перевірка каналу")),
+        ("docs/deployment.md", ("## Складники", "## Шаблони", "## Розрив зв’язку", "## Навантаження",
+                                "## Масштабованість", "## Мова і стек")),
+    ):
+        if (ROOT / name).is_file():
+            for heading in headings:
+                check(heading in read(ROOT / name), f"ЛР3: {name} не містить розділу «{heading[3:]}»")
+    check("data/" in read(ROOT / ".gitignore"), "ЛР3: бази SQLite (data/) мають бути виключені з Git")
+
+
 def validate_commit_count() -> None:
     result = subprocess.run(["git", "rev-list", "--count", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True)
     check(int(result.stdout.strip()) >= 2, "Історія має містити щонайменше два коміти")
@@ -205,6 +256,7 @@ def main() -> int:
     validate_correspondences()
     validate_adrs_and_scenarios()
     validate_lab2()
+    validate_lab3()
     if "--skip-git" not in sys.argv:
         validate_commit_count()
     if errors:
@@ -212,7 +264,8 @@ def main() -> int:
         for message in errors:
             print(f"  - {message}")
         return 1
-    print("Перевірку пройдено: комплектність, вимоги, бюджет, правила відповідності R1–R5, ADR і сценарії")
+    print("Перевірку пройдено: комплектність, вимоги, бюджет, правила відповідності R1–R5, ADR і сценарії, "
+          "контрольні списки ЛР2 і ЛР3")
     return 0
 
 

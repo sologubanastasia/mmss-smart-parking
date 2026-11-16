@@ -1,0 +1,24 @@
+15:26:21 розрив
+пам’ять брокера периферії на 30-й с розриву: 4.418MiB / 128MiB
+15:27:23 відновлення
+== bridge.conf
+boot  rate  sent received   loss late dup lat_mean_ms lat_p95_ms lat_max_ms
+   1 300.0 39818    20487 0.4855    0   0        15.1         37         59
+Відхилено: 0
+edge-broker-1  | 1794842842: Bridge cloud next backoff will be 3894 ms
+edge-broker-1  | 1794842846: Connecting bridge cloud (cloud-broker:1883)
+edge-broker-1  | 1794842904: Client za-us-017 [172.22.0.3:41937] disconnected.
+edge-broker-1  | 1794842904: Client za-us-018 [172.22.0.3:34117] disconnected.
+edge-broker-1  | 1794842904: Client za-us-019 [172.22.0.3:43723] disconnected.
+15:28:50 розрив
+пам’ять брокера периферії на 30-й с розриву: 9.375MiB / 128MiB
+15:29:52 відновлення
+== bridge-qos1.conf
+boot  rate  sent received   loss late dup lat_mean_ms lat_p95_ms lat_max_ms
+   1 300.0 39873    25500 0.3605    0   0      8252.6      61165      65732
+Відхилено: 0
+edge-broker-1  | 1794842992: Bridge cloud next backoff will be 5000 ms
+edge-broker-1  | 1794842996: Connecting bridge cloud (cloud-broker:1883)
+edge-broker-1  | 1794843053: Client za-us-017 [172.23.0.3:38785] disconnected.
+edge-broker-1  | 1794843053: Client za-us-018 [172.23.0.3:48569] disconnected.
+edge-broker-1  | 1794843053: Client za-us-019 [172.23.0.3:51357] disconnected.

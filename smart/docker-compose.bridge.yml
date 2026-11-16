@@ -1,0 +1,17 @@
+# Додатково: міст Mosquitto замість власного шлюзу (порівняння під час розриву).
+# Запуск з кореня репозиторію (bash), варіант А — звичайний міст:
+#   docker compose -f smart/docker-compose.yml -f smart/docker-compose.bridge.yml up -d
+# Варіант Б — з підвищенням QoS (BRIDGE_CONF=bridge-qos1.conf, див. bridgetest.sh).
+services:
+  edge-broker:
+    volumes:
+      - ./broker/${BRIDGE_CONF:-bridge.conf}:/mosquitto/config/mosquitto.conf:ro
+      - bridge-data:/mosquitto/data
+    networks: [edge, cloud] # тепер саме брокер периферії — єдиний зв'язок із сервером
+    depends_on: [cloud-broker]
+
+  gateway:
+    profiles: [gateway] # власний шлюз у цьому порівнянні не запускається
+
+volumes:
+  bridge-data:

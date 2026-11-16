@@ -6,6 +6,7 @@
 |---|---|---|
 | ЛР1 | Аналіз предметної області та архітектурний опис за ISO/IEC/IEEE 42010:2022 | [requirements.md](docs/requirements.md), [діаграми](#діаграми), ADR-0001–0003, [сценарії якості](docs/quality-scenarios.md) |
 | ЛР2 | Конвеєр оброблення та адаптивне потокове передавання | [pipeline.md](docs/pipeline.md), [qoe.md](docs/qoe.md), [ADR-0004](docs/adr/0004-stream-ladder.md), [розділ нижче](#лр2-конвеєр-і-потокове-передавання) |
+| ЛР3 | Архітектура смартсистеми: сенсорні дані, розподілене розгортання та шаблони | [telemetry.md](docs/telemetry.md), [deployment.md](docs/deployment.md), [ADR-0005](docs/adr/0005-telemetry-patterns.md), [ADR-0006](docs/adr/0006-gateway-language-stack.md), [розділ нижче](#лр3-сенсорні-дані-та-розгортання-edgecloud) |
 
 Система визначає зайнятість 500 паркомісць за відео й ультразвуковими датчиками, розпізнає номери на в'їзді та виїзді, керує шлагбаумом і табло та показує водіям вільні місця. Ця предметна область зберігається в лабораторних роботах 1–4.
 
@@ -56,6 +57,39 @@ cd stream && python -m http.server 8000                    # http://localhost:80
 | [results/](results) | `encoding.csv`, `encoding_sweep.csv`, `qoe.csv`, `qoe_extra.csv` |
 | [docs/pipeline.md](docs/pipeline.md), [docs/qoe.md](docs/qoe.md) | Звіти занять 1 і 2 |
 | [docs/adr/0004-stream-ladder.md](docs/adr/0004-stream-ladder.md) | Рішення щодо кодека, драбини, сегмента й початкового рівня |
+
+## ЛР3: сенсорні дані та розгортання edge–cloud
+
+Потрібні Docker Desktop (або Docker Engine з `docker compose` v2) і Python 3.10+ з `paho-mqtt==2.1.0` і `matplotlib`. Бази SQLite лежать у `data/` і томах Docker, у репозиторій не входять. У Windows команди виконуються в Git Bash.
+
+```bash
+source .venv/Scripts/activate && pip install paho-mqtt==2.1.0 matplotlib   # Linux, macOS: .venv/bin/activate
+export COMPOSE_FILE=smart/docker-compose.yml
+
+# Заняття 1: лише брокер з портом 127.0.0.1:1883 (роль брокера заняття 1), складники — на хості
+docker compose up -d cloud-broker
+python smart/collector.py                                                   # термінал 2
+DROP=0.03 DUP=0.02 LATE=0.03 BAD=0.02 HZ=20 DURATION=30 python smart/sensors.py
+python smart/stats.py
+
+# Заняття 2: периферійний і серверний складники (підписника на хості спершу зупинити)
+docker compose down && docker compose up -d --build
+docker compose exec -T collector python stats.py
+bash smart/loadtest.sh && THETA=550 python smart/plot.py                   # 9 ступенів → results/load.csv, latency.png
+bash smart/bottleneck.sh                                                    # додатково: смуга чи процесор → results/bottleneck.csv
+bash smart/bridgetest.sh                                                    # додатково: міст Mosquitto під час розриву → results/bridge.txt
+```
+
+| Файл | Зміст |
+|---|---|
+| [smart/sensors.py](smart/sensors.py) | Емулятор трьох ультразвукових датчиків зони A (D-05), внесення збоїв `DROP`, `DUP`, `LATE`, `BAD` |
+| [smart/collector.py](smart/collector.py), [smart/stats.py](smart/stats.py) | Sensor Ingest: перевірка схеми, `readings`/`anomalies`/`rejected`; підсумок λ, ε, Lд |
+| [smart/gateway.py](smart/gateway.py) | Sync Agent + Local Event Buffer: буфер SQLite, QoS 1, видалення після PUBACK |
+| [smart/docker-compose.yml](smart/docker-compose.yml), [smart/Dockerfile](smart/Dockerfile), [smart/broker/mosquitto.conf](smart/broker/mosquitto.conf) | Мережі `edge` і `cloud`, ліміти периферії, томи |
+| [smart/loadtest.sh](smart/loadtest.sh), [smart/plot.py](smart/plot.py) | Навантажувальне випробування і графік |
+| [smart/bottleneck.sh](smart/bottleneck.sh), [smart/bridgetest.sh](smart/bridgetest.sh), [smart/docker-compose.bridge.yml](smart/docker-compose.bridge.yml) | Додаткові експерименти: вузьке місце шлюзу, міст Mosquitto |
+| [docs/telemetry.md](docs/telemetry.md), [docs/deployment.md](docs/deployment.md) | Звіти занять 1 і 2 |
+| [docs/adr/0005-telemetry-patterns.md](docs/adr/0005-telemetry-patterns.md), [docs/adr/0006-gateway-language-stack.md](docs/adr/0006-gateway-language-stack.md) | Рішення щодо шаблонів і щодо мови та стека шлюзу |
 
 ## Діаграми
 
@@ -112,13 +146,18 @@ mmss-lab/
 │   ├── pipeline.md                  # ЛР2, заняття 1
 │   ├── qoe.md                       # ЛР2, заняття 2
 │   ├── adr/0004-stream-ladder.md    # ЛР2
+│   ├── telemetry.md                 # ЛР3, заняття 1
+│   ├── deployment.md                # ЛР3, заняття 2
+│   ├── adr/0005-telemetry-patterns.md, adr/0006-gateway-language-stack.md   # ЛР3
 │   └── diagrams/
 │       ├── context.mmd      context.svg
 │       ├── components.mmd   components.svg
 │       └── deployment.mmd   deployment.svg
 ├── pipeline/                        # ЛР2: pipeline.py, sweep.py, requirements.txt
 ├── stream/                          # ЛР2: package.sh, player.html, vendor/, маніфести hls/ і dash/
-├── results/                         # ЛР2: encoding.csv, encoding_sweep.csv, qoe.csv, qoe_extra.csv
+├── smart/                           # ЛР3: sensors.py, collector.py, stats.py, gateway.py, Dockerfile,
+│                                    #      docker-compose.yml, broker/, loadtest.sh, plot.py, додаткові сценарії
+├── results/                         # ЛР2: encoding*.csv, qoe*.csv; ЛР3: load.csv, latency.png, bottleneck.csv, bridge.txt
 └── tools/
     ├── validate_project.py
     └── qoe/                         # ЛР2: автоматизований прогін QoE (Puppeteer)
